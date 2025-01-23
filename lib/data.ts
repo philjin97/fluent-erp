@@ -10,6 +10,8 @@ export async function getStudents(): Promise<Student[]> {
   return result.map((doc) => ({
     ...doc,
     _id: doc._id.toString(),
+    credits: doc.credits || 0,
+    paymentHistory: doc.paymentHistory || "",
   })) as Student[]
 }
 

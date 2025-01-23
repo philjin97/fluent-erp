@@ -51,8 +51,14 @@ export default function EditTeacherModal({ teacher, onClose, onUpdate }: EditTea
             <Input id="name" name="name" defaultValue={teacher.name} required />
           </div>
           <div>
-            <Label htmlFor="experience">Experience (years)</Label>
-            <Input id="experience" name="experience" type="number" defaultValue={teacher.experience} required />
+            <Label htmlFor="experience">Experience</Label>
+            <Textarea
+              id="experience"
+              name="experience"
+              defaultValue={teacher.experience}
+              placeholder="Describe the teacher's experience..."
+              className="h-[100px]"
+            />
           </div>
           <div>
             <Label htmlFor="notes">Notes</Label>

@@ -131,6 +131,42 @@ export default function EditStudentModal({ student, onClose, onUpdate }: EditStu
             <Input id="commonQuestion2" name="commonQuestion2" defaultValue={student.commonQuestion2} />
           </div>
 
+          {/* Translations */}
+          <h2 className="text-xl font-semibold">Translations</h2>
+          {[
+            "오늘 뭐했니?",
+            "내일 뭐할거니?",
+            "뭐 먹었니?",
+            "너는 선생님이니?",
+            "너 어디에 사니?",
+            "너 홍대에 사니?",
+            "집이 어디니?",
+            "나 햄버거 먹고 싶어",
+            "나는 일찍 자야 해",
+            "너 뭐 사고 싶어?",
+            "홍대에 사람이 많아",
+            "나는 친구를 만나기 위해 홍대에 갔어",
+            "나는 요즘 여행하는 중이야",
+            "운동하는 것은 재미있어",
+            "나는 아침을 먹는 동안 티비를 봤어",
+            "나는 휴가 동안 집에 있었어",
+            "오늘 그거 말고 또 다른거 했어?",
+            "주말에 재미있는거 했어?",
+            "얼마나 오래 영어를 가르쳤니?",
+            "어떤 영화 봤어?",
+          ].map((question, index) => (
+            <div key={index}>
+              <Label htmlFor={`translation${index + 1}`}>
+                {index + 1}. {question}
+              </Label>
+              <Input
+                id={`translation${index + 1}`}
+                name={`translation${index + 1}`}
+                defaultValue={student[`translation${index + 1}`]}
+              />
+            </div>
+          ))}
+
           {/* Level Test Evaluation */}
           <h2 className="text-xl font-semibold">Level Test Evaluation</h2>
           <div>
@@ -199,7 +235,14 @@ export default function EditStudentModal({ student, onClose, onUpdate }: EditStu
             <Label htmlFor="paymentNotes">Payment Notes</Label>
             <Input id="paymentNotes" name="paymentNotes" defaultValue={student.paymentNotes} />
           </div>
-
+          <div>
+            <Label htmlFor="credits">Credits</Label>
+            <Input id="credits" name="credits" type="number" defaultValue={student.credits} />
+          </div>
+          <div>
+            <Label htmlFor="paymentHistory">Payment History</Label>
+            <Input id="paymentHistory" name="paymentHistory" defaultValue={student.paymentHistory} />
+          </div>
           <Button type="submit">Update Student</Button>
         </form>
       </DialogContent>

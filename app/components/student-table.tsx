@@ -66,7 +66,7 @@ export default function StudentTable({ initialStudents }: { initialStudents: Stu
                 <input
                   type="text"
                   value={student.teacher}
-                  onChange={(e) => handleChange(student._id, "teacherName", e.target.value)}
+                  onChange={(e) => handleChange(student._id, "teacher", e.target.value)}
                   className="w-full p-1 border rounded"
                 />
               </td>
@@ -84,7 +84,7 @@ export default function StudentTable({ initialStudents }: { initialStudents: Stu
               <td className="px-4 py-2 border-b">
                 <textarea
                   value={student.paymentNotes}
-                  onChange={(e) => handleChange(student._id, "notes", e.target.value)}
+                  onChange={(e) => handleChange(student._id, "paymentNotes", e.target.value)}
                   className="w-full p-1 border rounded"
                 />
               </td>
