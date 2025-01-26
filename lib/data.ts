@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import clientPromise from "@/lib/mongodb"
+import { clientPromise } from '@/lib/mongodb';
 import type { Student, Teacher } from "./definitions"
 
 export async function getStudents(): Promise<Student[]> {
@@ -7,7 +7,7 @@ export async function getStudents(): Promise<Student[]> {
   const database = client.db("school_management")
   const students = database.collection("students")
   const result = await students.find({}).sort({ createdAt: -1 }).toArray()
-  return result.map((doc) => ({
+  return result.map((doc:any) => ({
     ...doc,
     _id: doc._id.toString(),
     credits: doc.credits || 0,
@@ -16,23 +16,21 @@ export async function getStudents(): Promise<Student[]> {
 }
 
 export async function updateStudent(id: string, update: Partial<Student>): Promise<Student> {
-  const client = await clientPromise
-  console.log("client ok")
-  const database = client.db("school_management")
-  const students = database.collection("students")
-  const result = await students.findOneAndUpdate(
-    { _id: new ObjectId(id) },
-    { $set: update },
-    { returnDocument: "after" },
-  )
-  
+    const client = await clientPromise
+    const database = client.db("school_management")
+    const students = database.collection("students")
+    const result = await students.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: update },
+      { returnDocument: "after" },
+    )
 
-  if (result == null) {
-    throw new Error(`Student with ID ${id} not found or not updated.`);
+    if (result == null) {
+      throw new Error(`Student with ID ${id} not found or not updated.`);
+    }
+    return { ...result, _id: result._id.toString() } as Student
   }
-
-  return { ...result, _id: result._id.toString() } as Student
-}
+  
 
 export async function addStudent(student: Omit<Student, "_id">): Promise<Student> {
   const client = await clientPromise
@@ -70,5 +68,8 @@ export async function getTeachers(): Promise<Teacher[]> {
       { $set: update },
       { returnDocument: "after" },
     )
+    if (result == null) {
+      throw new Error(`Student with ID ${id} not found or not updated.`);
+    }
     return { ...result, _id: result._id.toString() } as Teacher
   }

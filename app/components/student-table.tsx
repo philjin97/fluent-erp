@@ -46,14 +46,14 @@ export default function StudentTable({ initialStudents }: { initialStudents: Stu
                 <input
                   type="checkbox"
                   checked={student.signedUp}
-                  onChange={(e) => handleChange(student._id, "signedUp", e.target.checked)}
+                  onChange={(e) => handleChange(student._id ?? "", "signedUp", e.target.checked)}
                   className="form-checkbox h-5 w-5 text-black"
                 />
               </td>
               <td className="px-4 py-2 border-b">
                 <select
                   value={student.status}
-                  onChange={(e) => handleChange(student._id, "status", e.target.value)}
+                  onChange={(e) => handleChange(student._id ?? "", "status", e.target.value)}
                   className="w-full p-1 border rounded"
                 >
                   <option value="didn't decide yet">Didn't decide yet</option>
@@ -66,7 +66,7 @@ export default function StudentTable({ initialStudents }: { initialStudents: Stu
                 <input
                   type="text"
                   value={student.teacher}
-                  onChange={(e) => handleChange(student._id, "teacher", e.target.value)}
+                  onChange={(e) => handleChange(student._id ?? "", "teacher", e.target.value)}
                   className="w-full p-1 border rounded"
                 />
               </td>
@@ -76,7 +76,7 @@ export default function StudentTable({ initialStudents }: { initialStudents: Stu
                   min="1"
                   max="10"
                   value={student.level}
-                  onChange={(e) => handleChange(student._id, "level", Number.parseInt(e.target.value, 10))}
+                  onChange={(e) => handleChange(student._id ?? "", "level", Number.parseInt(e.target.value, 10))}
                   className="w-full p-1 border rounded"
                 />
               </td>
@@ -84,7 +84,7 @@ export default function StudentTable({ initialStudents }: { initialStudents: Stu
               <td className="px-4 py-2 border-b">
                 <textarea
                   value={student.paymentNotes}
-                  onChange={(e) => handleChange(student._id, "paymentNotes", e.target.value)}
+                  onChange={(e) => handleChange(student._id ?? "", "paymentNotes", e.target.value)}
                   className="w-full p-1 border rounded"
                 />
               </td>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import type { Student } from "../lib/definitions"
+import type { Student } from "@/lib/definitions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { updateStudent } from "@/lib/actions"
@@ -36,14 +36,14 @@ export default function PaymentTable({ initialStudents }: { initialStudents: Stu
                 <Input
                   type="number"
                   value={student.credits ?? 0}
-                  onChange={(e) => handleUpdate(student._id, "credits", Number(e.target.value))}
+                  onChange={(e) => handleUpdate(student._id ?? "", "credits", Number(e.target.value))}
                   className="w-full"
                 />
               </td>
               <td className="px-4 py-2 border-b">
                 <Input
                   value={student.paymentHistory ?? 0}
-                  onChange={(e) => handleUpdate(student._id, "paymentHistory", e.target.value)}
+                  onChange={(e) => handleUpdate(student._id ?? "", "paymentHistory", e.target.value)}
                   className="w-full"
                 />
               </td>

@@ -26,15 +26,23 @@ export default function EditTeacherModal({ teacher, onClose, onUpdate }: EditTea
     const formData = new FormData(event.currentTarget)
 
     try {
+      if (!teacher._id) {
+        throw new Error("Teacher ID is missing");
+      }
       const updatedTeacher = await updateTeacher(teacher._id, {
         name: formData.get("name") as string,
-        experience: Number(formData.get("experience")),
+        experience: formData.get("experience") as string,
         notes: formData.get("notes") as string,
       })
-      onUpdate(updatedTeacher)
-      router.refresh()
+      onUpdate(updatedTeacher) // Call the onUpdate callback with the updated teacher data
+      router.refresh() // Refresh the page
+      onClose() // Close the modal after update
     } catch (error) {
-      setError(error.message)
+      if (error instanceof Error) {
+        setError(error.message); // error is now of type `Error`, so accessing `message` is safe
+      } else {
+        setError("An unknown error occurred."); // Fallback for unknown errors
+      }
     }
   }
 

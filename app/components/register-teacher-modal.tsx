@@ -29,7 +29,13 @@ export default function RegisterTeacherModal() {
       setOpen(false)
       router.push("/teacher-information")
     } catch (error) {
-      setError(error.message)
+      if (error instanceof Error) {
+        // Now TypeScript knows that `error` is of type `Error`, so `message` is safe to access.
+        setError(error.message);
+      } else {
+        // If the error is not an instance of Error, handle it accordingly
+        setError("An unknown error occurred.");
+      }
     }
   }
 

@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -16,6 +17,8 @@ interface EditStudentModalProps {
   onUpdate: (updatedStudent: Student) => void
 }
 
+
+
 export default function EditStudentModal({ student, onClose, onUpdate }: EditStudentModalProps) {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
@@ -32,11 +35,12 @@ export default function EditStudentModal({ student, onClose, onUpdate }: EditStu
     })
 
     try {
+      if (student._id){
       const updatedStudent = await updateStudent(student._id, Object.fromEntries(formDataWithEmptyStrings))
       onUpdate(updatedStudent)
       onClose()
-      router.push("/")
-    } catch (error) {
+      router.push("/")}
+    } catch (error:any) {
       setError(error.message)
     }
   }
@@ -162,7 +166,7 @@ export default function EditStudentModal({ student, onClose, onUpdate }: EditStu
               <Input
                 id={`translation${index + 1}`}
                 name={`translation${index + 1}`}
-                defaultValue={student[`translation${index + 1}`]}
+                defaultValue={student[`translation${index + 1}` as keyof Student] as string }
               />
             </div>
           ))}

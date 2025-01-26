@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server"
-import { updateStudent } from "@/lib/api"
+import { updateStudent } from "@/lib/data"
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
+  const id = params.id
+  const body = await request.json()
+
   try {
-    const id = params.id
-    const body = await request.json()
     const updatedStudent = await updateStudent(id, body)
     return NextResponse.json(updatedStudent)
   } catch (error) {

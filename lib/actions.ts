@@ -68,6 +68,8 @@ export async function addStudent(formData: FormData): Promise<Student> {
         teacher: formData.get("teacher") as string,
         paymentNotes: formData.get("paymentNotes") as string,
         createdAt: format(koreanDate, "yyyy-MM-dd"),
+        credits: Number(formData.get("credits")),
+        paymentHistory: formData.get("paymentHistory") as string
     }
     const addedStudent = await addStudentToDB(newStudent)
     revalidatePath("/student-registration")
