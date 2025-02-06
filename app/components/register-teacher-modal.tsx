@@ -55,6 +55,10 @@ export default function RegisterTeacherModal() {
             <Input id="name" name="name" required />
           </div>
           <div>
+            <Label htmlFor="phoneNumber">Phone Number</Label>
+            <Textarea id="phoneNumber" name="phoneNumber" />
+          </div>
+          <div>
             <Label htmlFor="experience">Experience</Label>
             <Textarea
               id="experience"
@@ -62,10 +66,6 @@ export default function RegisterTeacherModal() {
               placeholder="Describe the teacher's experience..."
               className="h-[100px]"
             />
-          </div>
-          <div>
-            <Label htmlFor="notes">Notes</Label>
-            <Textarea id="notes" name="notes" />
           </div>
           <Button type="submit">Submit</Button>
         </form>

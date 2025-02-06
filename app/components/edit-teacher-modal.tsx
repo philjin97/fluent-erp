@@ -31,8 +31,8 @@ export default function EditTeacherModal({ teacher, onClose, onUpdate }: EditTea
       }
       const updatedTeacher = await updateTeacher(teacher._id, {
         name: formData.get("name") as string,
+        phoneNumber: formData.get("phoneNumber") as string,
         experience: formData.get("experience") as string,
-        notes: formData.get("notes") as string,
       })
       onUpdate(updatedTeacher) // Call the onUpdate callback with the updated teacher data
       router.refresh() // Refresh the page
@@ -59,6 +59,10 @@ export default function EditTeacherModal({ teacher, onClose, onUpdate }: EditTea
             <Input id="name" name="name" defaultValue={teacher.name} required />
           </div>
           <div>
+            <Label htmlFor="phoneNumber">Phone Number</Label>
+            <Textarea id="phoneNumber" name="phoneNumber" defaultValue={teacher.phoneNumber} />
+          </div>
+          <div>
             <Label htmlFor="experience">Experience</Label>
             <Textarea
               id="experience"
@@ -67,10 +71,6 @@ export default function EditTeacherModal({ teacher, onClose, onUpdate }: EditTea
               placeholder="Describe the teacher's experience..."
               className="h-[100px]"
             />
-          </div>
-          <div>
-            <Label htmlFor="notes">Notes</Label>
-            <Textarea id="notes" name="notes" defaultValue={teacher.notes} />
           </div>
           <Button type="submit">Update Teacher</Button>
         </form>

@@ -85,8 +85,8 @@ export async function addTeacher(formData: FormData): Promise<Teacher> {
     try {
       const newTeacher = {
         name: formData.get("name") as string,
+        phoneNumber: formData.get("phoneNumber") as string,
         experience: formData.get("experience") as string,
-        notes: formData.get("notes") as string,
         createdAt: new Date().toISOString(),
       }
       const addedTeacher = await addTeacherToDB(newTeacher)

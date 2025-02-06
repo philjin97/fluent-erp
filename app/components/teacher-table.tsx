@@ -13,15 +13,15 @@ export default function TeacherTable({ initialTeachers }: { initialTeachers: Tea
       <table className="min-w-full bg-white border border-gray-300">
         <thead>
           <tr className="bg-gray-100">
-            <th className="px-4 py-2 border-b">Teacher Name</th>
+            <th className="w-1/6 px-4 py-2 border-b">Teacher Name</th>
+            <th className="w-1/4 px-4 py-2 border-b">Phone Number</th>
             <th className="px-4 py-2 border-b">Experience</th>
-            <th className="px-4 py-2 border-b">Notes</th>
           </tr>
         </thead>
         <tbody>
           {teachers.map((teacher) => (
             <tr key={teacher._id}>
-              <td className="px-4 py-2 border-b">
+              <td className="px-4 py-2 border-b text-center">
                 <button
                   onClick={() => setSelectedTeacher(teacher)}
                   className="text-blue-600 hover:underline focus:outline-none"
@@ -29,8 +29,8 @@ export default function TeacherTable({ initialTeachers }: { initialTeachers: Tea
                   {teacher.name}
                 </button>
               </td>
-              <td className="px-4 py-2 border-b">{teacher.experience}</td>
-              <td className="px-4 py-2 border-b">{teacher.notes}</td>
+              <td className="px-4 py-2 border-b text-center">{teacher.phoneNumber}</td>
+              <td className="px-4 py-2 border-b text-center">{teacher.experience}</td>
             </tr>
           ))}
         </tbody>

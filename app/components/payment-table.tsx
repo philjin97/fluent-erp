@@ -23,28 +23,28 @@ export default function PaymentTable({ initialStudents }: { initialStudents: Stu
       <table className="min-w-full bg-white border border-gray-300">
         <thead>
           <tr className="bg-gray-100">
-            <th className="px-4 py-2 border-b">Student Name</th>
-            <th className="px-4 py-2 border-b">Credits</th>
-            <th className="px-4 py-2 border-b">Payment History</th>
+            <th className="w-1/6 px-4 py-2 border-b">Student Name</th>
+            <th className="w-1/16 px-4 py-2 border-b">Credits</th>
+            <th className="w-3/4 px-4 py-2 border-b">Payment History</th>
           </tr>
         </thead>
         <tbody>
           {students.map((student) => (
             <tr key={student._id}>
-              <td className="px-4 py-2 border-b">{student.name}</td>
-              <td className="px-4 py-2 border-b">
+              <td className="px-4 py-2 border-b text-center">{student.name}</td>
+              <td className="px-4 py-2 border-b text-center">
                 <Input
                   type="number"
                   value={student.credits ?? 0}
                   onChange={(e) => handleUpdate(student._id ?? "", "credits", Number(e.target.value))}
-                  className="w-full"
+                  className="w-full mx-auto"
                 />
               </td>
               <td className="px-4 py-2 border-b">
-                <Input
-                  value={student.paymentHistory ?? 0}
-                  onChange={(e) => handleUpdate(student._id ?? "", "paymentHistory", e.target.value)}
-                  className="w-full"
+                <textarea
+                value={student.paymentHistory ?? ""}
+                onChange={(e) => handleUpdate(student._id ?? "", "paymentHistory", e.target.value)}
+                className="w-full min-h-[40px] p-2 border rounded-md resize-y"
                 />
               </td>
             </tr>

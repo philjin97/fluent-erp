@@ -50,7 +50,7 @@ export type Student = {
 export type Teacher = {
   _id?: string
   name: string
+  phoneNumber: string
   experience: string
-  notes: string
   createdAt: string
 }
