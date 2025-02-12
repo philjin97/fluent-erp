@@ -14,7 +14,7 @@ export default function StudentTable({ initialStudents }: { initialStudents: Stu
     console.log(id, field, value)
     const updatedStudent = await updateStudent(id, { [field]: value })
     console.log(updatedStudent)
-    setStudents(students.map((student) => (student._id === id ? updatedStudent : student)))
+    // setStudents(students.map((student) => (student._id === id ? updatedStudent : student)))
   }
 
   return (
@@ -44,49 +44,49 @@ export default function StudentTable({ initialStudents }: { initialStudents: Stu
               </td>
               <td className="px-4 py-2 border-b">
                 <input
-                  type="checkbox"
-                  checked={student.signedUp}
-                  onChange={(e) => handleChange(student._id ?? "", "signedUp", e.target.checked)}
-                  className="form-checkbox h-5 w-5 text-black"
-                />
+                    type="checkbox"
+                    defaultChecked={student.signedUp}
+                    onChange={(e) => handleChange(student._id ?? "", "signedUp", e.target.checked)}
+                    className="form-checkbox h-5 w-5 text-black"
+                  />
               </td>
               <td className="px-4 py-2 border-b">
                 <select
-                  value={student.status}
-                  onChange={(e) => handleChange(student._id ?? "", "status", e.target.value)}
-                  className="w-full p-1 border rounded"
-                >
-                  <option value="didn't decide yet">Didn't decide yet</option>
-                  <option value="paid but teacher not assigned">Paid but teacher not assigned</option>
-                  <option value="finalized">Finalized</option>
-                  <option value="lost cause">Lost cause</option>
-                </select>
+                    defaultValue={student.status}
+                    onBlur={(e) => handleChange(student._id ?? "", "status", e.target.value)}
+                    className="w-full p-1 border rounded"
+                  >
+                    <option value="didn't decide yet">Didn't decide yet</option>
+                    <option value="paid but teacher not assigned">Paid but teacher not assigned</option>
+                    <option value="finalized">Finalized</option>
+                    <option value="lost cause">Lost cause</option>
+                  </select>
               </td>
               <td className="px-4 py-2 border-b">
                 <input
-                  type="text"
-                  value={student.teacher}
-                  onChange={(e) => handleChange(student._id ?? "", "teacher", e.target.value)}
-                  className="w-full p-1 border rounded"
-                />
+                    type="text"
+                    defaultValue={student.teacher}
+                    onBlur={(e) => handleChange(student._id ?? "", "teacher", e.target.value)}
+                    className="w-full p-1 border rounded"
+                  />
               </td>
               <td className="px-4 py-2 border-b">
                 <input
-                  type="number"
-                  min="1"
-                  max="10"
-                  value={student.level}
-                  onChange={(e) => handleChange(student._id ?? "", "level", Number.parseInt(e.target.value, 10))}
-                  className="w-full p-1 border rounded"
-                />
+                    type="number"
+                    min="1"
+                    max="10"
+                    defaultValue={student.level}
+                    onBlur={(e) => handleChange(student._id ?? "", "level", Number.parseInt(e.target.value, 10))}
+                    className="w-full p-1 border rounded"
+                  />
               </td>
               <td className="px-4 py-2 border-b">{student.createdAt}</td>
               <td className="px-4 py-2 border-b">
                 <textarea
-                  value={student.paymentNotes}
-                  onChange={(e) => handleChange(student._id ?? "", "paymentNotes", e.target.value)}
-                  className="w-full p-1 border rounded"
-                />
+                    defaultValue={student.paymentNotes}
+                    onBlur={(e) => handleChange(student._id ?? "", "paymentNotes", e.target.value)}
+                    className="w-full p-1 border rounded"
+                  />
               </td>
             </tr>
           ))}
