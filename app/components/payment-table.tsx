@@ -35,16 +35,16 @@ export default function PaymentTable({ initialStudents }: { initialStudents: Stu
               <td className="px-4 py-2 border-b text-center">
                 <Input
                   type="number"
-                  value={student.credits ?? 0}
-                  onChange={(e) => handleUpdate(student._id ?? "", "credits", Number(e.target.value))}
+                  defaultValue={student.credits ?? 0} // Changed to defaultValue
+                  onBlur={(e) => handleUpdate(student._id ?? "", "credits", Number(e.target.value))}
                   className="w-full mx-auto"
                 />
               </td>
               <td className="px-4 py-2 border-b">
                 <textarea
-                value={student.paymentHistory ?? ""}
-                onChange={(e) => handleUpdate(student._id ?? "", "paymentHistory", e.target.value)}
-                className="w-full min-h-[40px] p-2 border rounded-md resize-y"
+                  defaultValue={student.paymentHistory ?? ""} // Changed to defaultValue
+                  onBlur={(e) => handleUpdate(student._id ?? "", "paymentHistory", e.target.value)}
+                  className="w-full min-h-[40px] p-2 border rounded-md resize-y"
                 />
               </td>
             </tr>
