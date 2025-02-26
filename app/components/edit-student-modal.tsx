@@ -57,19 +57,19 @@ export default function EditStudentModal({ student, onClose, onUpdate }: EditStu
           <h2 className="text-xl font-semibold">Basic Info</h2>
           <div>
             <Label htmlFor="name">Name</Label>
-            <Input id="name" name="name" defaultValue={student.name} required />
+            <Input id="name" name="name" defaultValue={student.name} required/>
           </div>
           <div>
             <Label htmlFor="age">Age</Label>
-            <Input id="age" name="age" type="number" defaultValue={student.age} required />
+            <Input id="age" name="age" type="number" defaultValue={student.age} />
           </div>
           <div>
             <Label htmlFor="job">Job</Label>
-            <Input id="job" name="job" defaultValue={student.job} required />
+            <Input id="job" name="job" defaultValue={student.job}/>
           </div>
           <div>
             <Label htmlFor="phoneNumber">Phone Number</Label>
-            <Input id="phoneNumber" name="phoneNumber" type="tel" defaultValue={student.phoneNumber} required />
+            <Input id="phoneNumber" name="phoneNumber" type="tel" defaultValue={student.phoneNumber} required/>
           </div>
           <div>
             <Label htmlFor="selfPerceivedLevel">Self-perceived Level (1-10)</Label>

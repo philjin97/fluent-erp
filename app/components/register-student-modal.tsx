@@ -53,11 +53,11 @@ export default function RegisterStudentModal() {
           </div>
           <div>
             <Label htmlFor="age">Age</Label>
-            <Input id="age" name="age" type="number" required />
+            <Input id="age" name="age" type="number" />
           </div>
           <div>
             <Label htmlFor="job">Job</Label>
-            <Input id="job" name="job" required />
+            <Input id="job" name="job" />
           </div>
           <div>
             <Label htmlFor="phoneNumber">Phone Number</Label>
