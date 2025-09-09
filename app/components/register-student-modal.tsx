@@ -15,7 +15,7 @@ import { addStudent } from "@/lib/actions";
  * 3) teacher (teacher name)
  * 4) classStartDate (YYYY. MM. DD. on submit; input uses native date picker)
  * 5) repeatDays (multi-select checkboxes: Mon–Sun; stored as comma-separated string)
- * 6) classTime (HH:mm)
+ * 6) classTime (0–24)
  */
 export default function RegisterStudentModal() {
   const [open, setOpen] = useState(false);
@@ -45,7 +45,8 @@ export default function RegisterStudentModal() {
     const name = String(raw.get("name") || "").trim();
     const teacher = String(raw.get("teacher") || "").trim();
     const classStartDateISO = String(raw.get("classStartDate") || ""); // YYYY-MM-DD from <input type="date">
-    const classTime = String(raw.get("classTime") || ""); // HH:mm from <input type="time">
+    const classTimeHourRaw = String(raw.get("classTime") || "");
+    const classTimeHour = Number(classTimeHourRaw); // HH:mm from <input type="time">
 
     // Collect repeat days from checked boxes
     const checked = Array.from(
@@ -61,7 +62,10 @@ export default function RegisterStudentModal() {
     if (!teacher) return setError("Teacher name is required.");
     if (!classStartDateISO) return setError("Class start date is required.");
     if (!checked.length) return setError("Select at least one repeat day.");
-    if (!classTime) return setError("Class time is required.");
+    if (classTimeHourRaw === "") return setError("Class time is required.");
+    if (!Number.isInteger(classTimeHour) || classTimeHour < 0 || classTimeHour > 24) {
+      return setError("Class time must be an integer hour between 0 and 24.");
+    }
 
     const classStartDate = formatDateYMDdots(classStartDateISO);
     if (!/^\d{4}\.\s\d{2}\.\s\d{2}\.$/.test(classStartDate)) {
@@ -75,7 +79,7 @@ export default function RegisterStudentModal() {
     fd.set("teacher", teacher);
     fd.set("classStartDate", classStartDate); // e.g., "2025. 09. 09."
     fd.set("repeatDays", checked.join(",")); // e.g., "Mon,Wed,Fri"
-    fd.set("classTime", classTime); // e.g., "14:30"
+    fd.set("classTime", String(classTimeHour)); // e.g., "14:30"
 
     try {
       setPending(true);
@@ -179,8 +183,8 @@ export default function RegisterStudentModal() {
 
           {/* 6) Class time */}
           <div>
-            <Label htmlFor="classTime">Class Time</Label>
-            <Input id="classTime" name="classTime" type="time" required />
+            <Label htmlFor="classTime">Class Time (0–24)</Label>
+            <Input id="classTime" name="classTime" type="number" inputMode="numeric" min={0} max={24} step={1} required />
           </div>
 
           <Button type="submit" disabled={pending}>
