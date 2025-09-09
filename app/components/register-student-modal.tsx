@@ -1,230 +1,193 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { addStudent } from "@/lib/actions"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { addStudent } from "@/lib/actions";
 
+/**
+ * Minimal Register Student form with exactly 6 mandatory fields:
+ * 1) name
+ * 2) phoneNumber (digits only)
+ * 3) teacher (teacher name)
+ * 4) classStartDate (YYYY. MM. DD. on submit; input uses native date picker)
+ * 5) repeatDays (multi-select checkboxes: Mon–Sun; stored as comma-separated string)
+ * 6) classTime (HH:mm)
+ */
 export default function RegisterStudentModal() {
-  const [open, setOpen] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
+  const [open, setOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [phone, setPhone] = useState("");
+  const [pending, setPending] = useState(false);
+  const router = useRouter();
+
+  const formatDateYMDdots = (isoDate: string) => {
+    // isoDate expected like "2025-09-09"; output "2025. 09. 09."
+    if (!isoDate) return "";
+    const [y, m = "", d = ""] = isoDate.split("-");
+    if (y?.length !== 4) return "";
+    const mm = m.padStart(2, "0");
+    const dd = d.padStart(2, "0");
+    return `${y}. ${mm}. ${dd}.`;
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setError(null)
-    const formData = new FormData(event.currentTarget);
+    event.preventDefault();
+    setError(null);
+
+    const formEl = event.currentTarget;
+    const raw = new FormData(formEl);
+
+    // Normalize and validate fields
+    const name = String(raw.get("name") || "").trim();
+    const teacher = String(raw.get("teacher") || "").trim();
+    const classStartDateISO = String(raw.get("classStartDate") || ""); // YYYY-MM-DD from <input type="date">
+    const classTime = String(raw.get("classTime") || ""); // HH:mm from <input type="time">
+
+    // Collect repeat days from checked boxes
+    const checked = Array.from(
+      formEl.querySelectorAll<HTMLInputElement>('input[name="repeatDays"]:checked')
+    ).map((el) => el.value);
+
+    // Digits-only phone number
+    const phoneDigits = String(raw.get("phoneNumber") || "").replace(/\D+/g, "");
+
+    // Basic validations
+    if (!name) return setError("Name is required.");
+    if (!phoneDigits) return setError("Phone number must contain digits only.");
+    if (!teacher) return setError("Teacher name is required.");
+    if (!classStartDateISO) return setError("Class start date is required.");
+    if (!checked.length) return setError("Select at least one repeat day.");
+    if (!classTime) return setError("Class time is required.");
+
+    const classStartDate = formatDateYMDdots(classStartDateISO);
+    if (!/^\d{4}\.\s\d{2}\.\s\d{2}\.$/.test(classStartDate)) {
+      return setError("Date must be in YYYY. MM. DD. format.");
+    }
+
+    // Build clean FormData for server action
+    const fd = new FormData();
+    fd.set("name", name);
+    fd.set("phoneNumber", phoneDigits);
+    fd.set("teacher", teacher);
+    fd.set("classStartDate", classStartDate); // e.g., "2025. 09. 09."
+    fd.set("repeatDays", checked.join(",")); // e.g., "Mon,Wed,Fri"
+    fd.set("classTime", classTime); // e.g., "14:30"
 
     try {
-      await addStudent(formData)
-      setOpen(false)
-      router.push("/")
-    } catch (error) {
-      if (error instanceof Error) {
-        // Now TypeScript knows that `error` is of type `Error`, so `message` is safe to access.
-        setError(error.message);
+      setPending(true);
+      await addStudent(fd);
+      setOpen(false);
+      router.push("/");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
       } else {
-        // If the error is not an instance of Error, handle it accordingly
         setError("An unknown error occurred.");
       }
+    } finally {
+      setPending(false);
     }
-  }
+  };
+
+  // Days of week with stable values for storage
+  const DAYS: { label: string; value: string }[] = [
+    { label: "Mon", value: "Mon" },
+    { label: "Tue", value: "Tue" },
+    { label: "Wed", value: "Wed" },
+    { label: "Thu", value: "Thu" },
+    { label: "Fri", value: "Fri" },
+    { label: "Sat", value: "Sat" },
+    { label: "Sun", value: "Sun" },
+  ];
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">Register Student</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[850px] sm:max-h-[650px] overflow-y-auto">
+      <DialogContent className="sm:max-w-[640px] sm:max-h-[650px] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Register New Student</DialogTitle>
         </DialogHeader>
+
         {error && <p className="text-red-500 mb-4">{error}</p>}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Basic Info */}
-          <h2 className="text-xl font-semibold">Basic Info</h2>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* 1) Name */}
           <div>
             <Label htmlFor="name">Name</Label>
             <Input id="name" name="name" required />
           </div>
-          <div>
-            <Label htmlFor="age">Age</Label>
-            <Input id="age" name="age" type="number" />
-          </div>
-          <div>
-            <Label htmlFor="job">Job</Label>
-            <Input id="job" name="job" />
-          </div>
+
+          {/* 2) Phone Number (digits only) */}
           <div>
             <Label htmlFor="phoneNumber">Phone Number</Label>
-            <Input id="phoneNumber" name="phoneNumber" type="tel" required />
-          </div>
-          <div>
-            <Label htmlFor="selfPerceivedLevel">Self-perceived Level (1-10)</Label>
-            <Input id="selfPerceivedLevel" name="selfPerceivedLevel" type="number" min="1" max="10"/>
-          </div>
-          <div>
-            <Label htmlFor="englishGoal">Personal-English Goal (1-10)</Label>
-            <Input id="englishGoal" name="englishGoal" type="number" min="1" max="10"/>
-          </div>
-          <div>
-            <Label htmlFor="reasonForStudying">Reason for studying this time</Label>
-            <Input id="reasonForStudying" name="reasonForStudying" />
-          </div>
-          <div>
-            <Label htmlFor="englishBackground">English Background</Label>
-            <Input id="englishBackground" name="englishBackground" />
-          </div>
-          <div>
-            <Label htmlFor="expectedDuration">Expected duration to achieve goal</Label>
-            <Input id="expectedDuration" name="expectedDuration" />
-          </div>
-          <div>
-            <Label htmlFor="homeworkHours">How many hours can you invest in homework between classes?</Label>
-            <Input id="homeworkHours" name="homeworkHours" />
+            <Input
+              id="phoneNumber"
+              name="phoneNumber"
+              inputMode="numeric"
+              pattern="\\d*"
+              required
+              value={phone}
+              onChange={(e) => {
+                // Keep only digits in state
+                const digits = e.target.value.replace(/\D+/g, "");
+                setPhone(digits);
+              }}
+              placeholder="Digits only"
+            />
           </div>
 
-          {/* Level Test */}
-          <h2 className="text-xl font-semibold">Level Test</h2>
+          {/* 3) Teacher name */}
           <div>
-            <Label htmlFor="consentForRecording">Consent for recording</Label>
-            <Select name="consentForRecording">
-              <SelectTrigger>
-                <SelectValue placeholder="Select consent" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Yes">Yes</SelectItem>
-                <SelectItem value="No">No</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="commonQuestion1">Common Questions - Hi nice to meet you, my name is David. What is your name?</Label>
-            <Input id="commonQuestion1" name="commonQuestion1" />
-          </div>
-          <div>
-            <Label htmlFor="commonQuestion2">Common Questions - Can you introduce yourself?</Label>
-            <Input id="commonQuestion2" name="commonQuestion2" />
+            <Label htmlFor="teacher">Teacher Name</Label>
+            <Input id="teacher" name="teacher" required />
           </div>
 
-          {/* Translations */}
-          <h2 className="text-xl font-semibold">Translations</h2>
-          {[
-            "오늘 뭐했니?",
-            "내일 뭐할거니?",
-            "뭐 먹었니?",
-            "너는 선생님이니?",
-            "너 어디에 사니?",
-            "너 홍대에 사니?",
-            "집이 어디니?",
-            "나 햄버거 먹고 싶어",
-            "나는 일찍 자야 해",
-            "너 뭐 사고 싶어?",
-            "홍대에 사람이 많아",
-            "나는 친구를 만나기 위해 홍대에 갔어",
-            "나는 요즘 여행하는 중이야",
-            "운동하는 것은 재미있어",
-            "나는 아침을 먹는 동안 티비를 봤어",
-            "나는 휴가 동안 집에 있었어",
-            "오늘 그거 말고 또 다른거 했어?",
-            "주말에 재미있는거 했어?",
-            "얼마나 오래 영어를 가르쳤니?",
-            "어떤 영화 봤어?",
-          ].map((question, index) => (
-            <div key={index}>
-              <Label htmlFor={`translation${index + 1}`}>
-                {index + 1}. {question}
-              </Label>
-              <Input id={`translation${index + 1}`} name={`translation${index + 1}`} />
+          {/* 4) Class start date (will be sent as YYYY. MM. DD.) */}
+          <div>
+            <Label htmlFor="classStartDate">Class Start Date</Label>
+            <Input id="classStartDate" name="classStartDate" type="date" required />
+            <p className="text-xs text-muted-foreground mt-1">
+              Saved as <code>YYYY. MM. DD.</code> (e.g., 2025. 09. 09.)
+            </p>
+          </div>
+
+          {/* 5) Repeat days */}
+          <div>
+            <Label>Repeat Days</Label>
+            <div className="mt-2 grid grid-cols-3 gap-2">
+              {DAYS.map((d) => (
+                <label key={d.value} className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    name="repeatDays"
+                    value={d.value}
+                    className="h-4 w-4 rounded border"
+                    required={false} // overall group is required; validated in JS
+                  />
+                  {d.label}
+                </label>
+              ))}
             </div>
-          ))}
-
-          {/* Level Test Evaluation */}
-          <h2 className="text-xl font-semibold">Level Test Evaluation</h2>
-          <div>
-            <Label htmlFor="level">Overall Level (1-10)</Label>
-            <Input id="level" name="level" type="number" min="1" max="10" />
-          </div>
-          <div>
-            <Label htmlFor="levelDescription">Description</Label>
-            <Input id="levelDescription" name="levelDescription" />
+            <p className="text-xs text-muted-foreground mt-1">Select at least one.</p>
           </div>
 
-          {/* Curriculum Guide */}
-          <h2 className="text-xl font-semibold">Curriculum Guide</h2>
+          {/* 6) Class time */}
           <div>
-            <Label htmlFor="curriculum">Curriculum</Label>
-            <Input id="curriculum" name="curriculum" />
+            <Label htmlFor="classTime">Class Time</Label>
+            <Input id="classTime" name="classTime" type="time" required />
           </div>
 
-          {/* Class Schedule */}
-          <h2 className="text-xl font-semibold">Class Schedule</h2>
-          <div>
-            <Label htmlFor="classSchedule">Class Schedule</Label>
-            <Input id="classSchedule" name="classSchedule" />
-          </div>
-
-          {/* Finalized Schedule */}
-          <h2 className="text-xl font-semibold">Finalized Schedule</h2>
-          <div>
-            <Label htmlFor="finalizedNotes">Notes</Label>
-            <Input id="finalizedNotes" name="finalizedNotes" defaultValue="" />
-          </div>
-
-          <div>
-            <Label htmlFor="credits">Credits</Label>
-            <Input id="credits" name="credits" type="number" defaultValue={0} />
-          </div>
-          <div>
-            <Label htmlFor="paymentHistory">Payment History</Label>
-            <Input id="paymentHistory" name="paymentHistory" defaultValue="" />
-          </div>
-
-          {/* Additional Information */}
-          <h2 className="text-xl font-semibold">Additional Information</h2>
-          <div>
-            <Label htmlFor="signedUp">Signed Up</Label>
-            <Select name="signedUp" defaultValue="Yes">
-              <SelectTrigger>
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Yes">Yes</SelectItem>
-                <SelectItem value="No">No</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="status">Status</Label>
-            <Select name="status">
-              <SelectTrigger>
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="lost cause">Lost cause</SelectItem>
-                <SelectItem value="didn't decide yet">Didn't decide yet</SelectItem>
-                <SelectItem value="paid but teacher not assigned">Paid but teacher not assigned</SelectItem>
-                <SelectItem value="finalized">Finalized</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="teacher">Teacher</Label>
-            <Input id="teacher" name="teacher" defaultValue="" />
-          </div>
-          <div>
-            <Label htmlFor="paymentNotes">Payment Notes</Label>
-            <Input id="paymentNotes" name="paymentNotes" defaultValue="" />
-          </div>
-
-          <Button type="submit">Submit</Button>
+          <Button type="submit" disabled={pending}>
+            {pending ? "Saving..." : "Submit"}
+          </Button>
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-
