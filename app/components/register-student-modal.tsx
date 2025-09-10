@@ -11,7 +11,7 @@ import { addStudent } from "@/lib/actions";
 /**
  * Minimal Register Student form with exactly 6 mandatory fields:
  * 1) name
- * 2) phoneNumber (digits only)
+ * 2) phoneNumber (string)
  * 3) teacher (teacher name)
  * 4) classStartDate (YYYY. MM. DD. on submit; input uses native date picker)
  * 5) repeatDays (multi-select checkboxes: Mon–Sun; stored as comma-separated string)
@@ -20,8 +20,7 @@ import { addStudent } from "@/lib/actions";
 export default function RegisterStudentModal() {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [phone, setPhone] = useState("");
-  const [pending, setPending] = useState(false);
+    const [pending, setPending] = useState(false);
   const router = useRouter();
 
   const formatDateYMDdots = (isoDate: string) => {
@@ -53,12 +52,12 @@ export default function RegisterStudentModal() {
       formEl.querySelectorAll<HTMLInputElement>('input[name="repeatDays"]:checked')
     ).map((el) => el.value);
 
-    // Digits-only phone number
-    const phoneDigits = String(raw.get("phoneNumber") || "").replace(/\D+/g, "");
+    // Phone number as-is (string)
+    const phoneNumber = String(raw.get("phoneNumber") || "").trim();
 
     // Basic validations
     if (!name) return setError("Name is required.");
-    if (!phoneDigits) return setError("Phone number must contain digits only.");
+    if (!phoneNumber) return setError("Phone number is required.");
     if (!teacher) return setError("Teacher name is required.");
     if (!classStartDateISO) return setError("Class start date is required.");
     if (!checked.length) return setError("Select at least one repeat day.");
@@ -75,7 +74,7 @@ export default function RegisterStudentModal() {
     // Build clean FormData for server action
     const fd = new FormData();
     fd.set("name", name);
-    fd.set("phoneNumber", phoneDigits);
+    fd.set("phoneNumber", phoneNumber);
     fd.set("teacher", teacher);
     fd.set("classStartDate", classStartDate); // e.g., "2025. 09. 09."
     fd.set("repeatDays", checked.join(",")); // e.g., "Mon,Wed,Fri"
@@ -133,16 +132,9 @@ export default function RegisterStudentModal() {
             <Input
               id="phoneNumber"
               name="phoneNumber"
-              inputMode="numeric"
-              pattern="\\d*"
+              type="text"
               required
-              value={phone}
-              onChange={(e) => {
-                // Keep only digits in state
-                const digits = e.target.value.replace(/\D+/g, "");
-                setPhone(digits);
-              }}
-              placeholder="Digits only"
+              placeholder="Phone number"
             />
           </div>
 
