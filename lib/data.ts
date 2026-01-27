@@ -32,13 +32,29 @@ export async function updateStudent(id: string, update: Partial<Student>): Promi
   }
   
 
-export async function addStudent(student: Omit<Student, "_id">): Promise<Student> {
+export async function addStudent(
+  student: Omit<Student, "_id">
+): Promise<Student> {
   const client = await clientPromise
   const database = client.db("school_management")
-  const students = database.collection("students")
+  const students = database.collection<Student>("students")
+
+  // 🔍 1. Check if student with same name already exists
+  const existingStudent = await students.findOne({ name: student.name })
+
+  if (existingStudent) {
+    throw new Error(`Student with name "${student.name}" already exists`)
+  }
+
+  // ✅ 2. Insert if not exists
   const result = await students.insertOne(student)
-  return { ...student, _id: result.insertedId.toString() } as Student
+
+  return {
+    ...student,
+    _id: result.insertedId.toString(),
+  } as Student
 }
+
 
 export async function getTeachers(): Promise<Teacher[]> {
     const client = await clientPromise
